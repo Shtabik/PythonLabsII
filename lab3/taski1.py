@@ -5,14 +5,12 @@ from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier, plot_tre
 from sklearn.metrics import (root_mean_squared_error, mean_absolute_error,classification_report, roc_curve, auc, accuracy_score,r2_score)
 
 df = pd.read_csv('Car_Price.csv')
-df = df.drop(['Make', 'Model'], axis=1)
 df = pd.get_dummies(df, columns=['Fuel Type', 'Transmission'], drop_first=True)
-
-X_reg = df.drop(['Price'], axis=1)
+X_reg = df.drop(['Price','Make','Model'], axis=1)
 y_reg = df['Price']
 
 X_train_reg, X_test_reg, y_train_reg, y_test_reg = train_test_split(X_reg, y_reg, test_size=0.2, random_state=42)
-dt_regressor = DecisionTreeRegressor(max_depth=5, random_state=42)
+dt_regressor = DecisionTreeRegressor(max_depth=12,     min_samples_leaf=14, random_state=42)
 dt_regressor.fit(X_train_reg, y_train_reg)
 
 y_pred_reg = dt_regressor.predict(X_test_reg)

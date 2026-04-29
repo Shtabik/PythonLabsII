@@ -1,0 +1,47 @@
+Линейная регрессия с одни параметром Пробега дала MAE: 3528.8993524709745 при средней цене машины в 25140
+что в принципе если закрыть глаза неплохо;если же добавить второй признак обьем двигателя то  MAE: 3200.2366088419963
+уже будет по лучше но не сильно поменялось все;
+
+A = df[['Mileage', 'Engine Size']]
+b = df['Price']
+A_train, A_test, b_train, b_test = train_test_split(A, b, test_size=0.4, random_state=42)
+model = LinearRegression()
+model.fit(A_train, b_train)
+y_pred_multi = model.predict(A_test)
+rmse_multi = root_mean_squared_error(b_test, y_pred_multi)
+mae_multi = mean_absolute_error(b_test, y_pred_multi)
+
+
+A если добавить признаки например: модели и типа топлива -то тут MAE : 1715.18 а это посравнению с 3200
+уже весомая разницa
+
+
+df_experiment = pd.get_dummies(df, columns=['Make', 'Fuel Type'], drop_first=True)
+X = df_experiment.drop(['Price', 'Model', 'Transmission'], axis=1)
+y = df_experiment['Price']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+exp_model = LinearRegression()
+exp_model.fit(X_train, y_train)
+y_pred = exp_model.predict(X_test)
+mae_exp = mean_absolute_error(y_test, y_pred)
+rmse_exp = root_mean_squared_error(y_test, y_pred)
+
+Задача классификации с параметрами 'Price', 'Mileage', 'Engine Size' по оценкам дает
+accuracy 0.54 это будем честны плохой результат -Механика reсall -0.78 что хорошо а вот Автомат =0.31 а это печаль
+
+и даже если добавить такие параметры такие как  модель и тип бензина то accuracy 0.51(и даже с L1-регуляризации
+оно отсеяло из 10 6-ненужных но accuracy осталось 0.51)
+и можем сделать вывод что
+на основе имеющихся данных плохо работает линейное разделение(логистическая регрессия ) и для получение более
+точных результатов надо использовать нелинейные способы;
+
+df = pd.read_csv('Car_Price.csv')
+df_encoded = pd.get_dummies(df, columns=['Make', 'Fuel Type'], drop_first=True)
+X = df_encoded.drop(['Transmission', 'Model'], axis=1)
+y = (df['Transmission'] == 'Automatic').astype(int)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+log_model_plus = LogisticRegression(max_iter=2000)
+log_model_plus.fit(X_train, y_train)
+y_pred = log_model_plus.predict(X_test)
+print(classification_report(y_test, y_pred, target_names=['Manual', 'Automatic']))
+

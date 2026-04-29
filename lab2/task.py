@@ -6,7 +6,8 @@ from sklearn.metrics import root_mean_squared_error,r2_score, mean_absolute_erro
 
 
 df = pd.read_csv('Car_Price.csv')
-X = df[['Mileage']]
+df = pd.get_dummies(df, columns=['Make', 'Fuel Type', 'Model', 'Transmission'], drop_first=True)
+X = df.drop(['Price'], axis=1)
 y = df['Price']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
 linear_model = LinearRegression()
